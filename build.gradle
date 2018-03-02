@@ -1,0 +1,112 @@
+plugins {
+  id 'net.researchgate.release' version '2.6.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'net.researchgate.release'
+
+
+group = 'com.rbc.xgz0.demo.stream'
+version = "${version}"
+
+allprojects {
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	repositories {
+		maven {	url "${nexusUrl}/central/"	}
+		maven { url "${nexusUrl}/thirdparty/" }
+
+		mavenCentral()
+		maven { url "https://repo.spring.io/snapshot" }
+		maven { url "https://repo.spring.io/milestone" }
+		
+		maven { 
+			credentials {
+				username nexusUsername
+				password nexusPassword
+			}
+			url "${nexusUrl}/xgz0-releases/" 
+		}
+		maven {  
+			credentials {
+				username nexusUsername
+				password nexusPassword
+			}
+			url "${nexusUrl}/xgz0-snapshots/" 
+			     
+		}
+	}
+	
+	apply plugin: 'java'	
+	apply plugin: 'jacoco'
+	test {
+		testLogging {
+			events "PASSED", "FAILED", "SKIPPED"
+		}
+	}	
+	
+	afterEvaluate { 
+	    if(tasks.findByName("classes")) {
+	      task sourcesJar(type: Jar, dependsOn: classes) {
+	        classifier = 'sources'
+	        from sourceSets.main.allSource
+	      }
+	      artifacts {
+	        archives sourcesJar
+	      }
+	    }
+	}	
+}
+
+subprojects.each { subproject -> evaluationDependsOn( subproject.path ) }
+
+publishing {
+	publications {
+		mavenStreamProducer(MavenPublication) {  
+			artifactId "stream-producer"
+			artifact file("stream-producer/build/libs/stream-producer-${project.version}.jar")
+			artifact source: file("stream-producer/build/libs/stream-producer-${project.version}-sources.jar"), classifier:"sources"
+		}  
+		mavenStreamConsumer(MavenPublication) {  
+			artifactId "stream-subscriber"
+			artifact file("stream-subscriber/build/libs/stream-subscriber-${project.version}.jar")
+			artifact source: file("stream-subscriber/build/libs/stream-subscriber-${project.version}-sources.jar"), classifier:"sources"
+		}  
+
+	}	
+	repositories {
+	    maven {
+		    credentials { 
+			      username nexusUsername 
+			      password nexusPassword }
+            if(project.version.endsWith('-SNAPSHOT')) {
+				name "xgz0-snapshots"
+				url "${nexusUrl}/xgz0-snapshots/"
+          	} else {
+				name "xgz0-releases"
+				url "${nexusUrl}/xgz0-releases/"
+          	}	        
+	    }
+	}    
+}
+
+release { 
+	failOnUnversionedFiles = false
+    failOnCommitNeeded = false
+    failOnPublishNeeded = true
+    failOnSnapshotDependencies = true
+    failOnUnversionedFiles = true
+    failOnUpdateNeeded = true
+    revertOnFail = true	
+    buildTasks = ['build']
+	afterReleaseBuild.dependsOn publish
+	git{
+		requireBranch=''
+		pushToRemote='origin'
+		pushToCurrentBranch=true
+	}
+}
+

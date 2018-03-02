@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Start-Class: ca.itm.stream.demo.sub.StreamSubApplication
+Main-Class: org.springframework.boot.loader.JarLauncher
+

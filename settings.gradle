@@ -1,0 +1,3 @@
+rootProject.name = 'spring-cloud-stream-kafka'
+include 'stream-producer'
+include	'stream-subscriber'
