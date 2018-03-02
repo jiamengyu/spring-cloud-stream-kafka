@@ -20,7 +20,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-group = 'com.rbc.xgz0.demo.stream'
+group = 'ca.itm.demo.stream'
 version = "${version}"
 sourceCompatibility = 1.8
 

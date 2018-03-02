@@ -8,7 +8,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'net.researchgate.release'
 
 
-group = 'com.rbc.xgz0.demo.stream'
+group = 'ca.itm.demo.stream'
 version = "${version}"
 
 allprojects {
@@ -16,28 +16,9 @@ allprojects {
 	targetCompatibility = 1.8
 
 	repositories {
-		maven {	url "${nexusUrl}/central/"	}
-		maven { url "${nexusUrl}/thirdparty/" }
-
 		mavenCentral()
 		maven { url "https://repo.spring.io/snapshot" }
 		maven { url "https://repo.spring.io/milestone" }
-		
-		maven { 
-			credentials {
-				username nexusUsername
-				password nexusPassword
-			}
-			url "${nexusUrl}/xgz0-releases/" 
-		}
-		maven {  
-			credentials {
-				username nexusUsername
-				password nexusPassword
-			}
-			url "${nexusUrl}/xgz0-snapshots/" 
-			     
-		}
 	}
 	
 	apply plugin: 'java'	
@@ -77,20 +58,22 @@ publishing {
 		}  
 
 	}	
-	repositories {
-	    maven {
-		    credentials { 
-			      username nexusUsername 
-			      password nexusPassword }
-            if(project.version.endsWith('-SNAPSHOT')) {
-				name "xgz0-snapshots"
-				url "${nexusUrl}/xgz0-snapshots/"
-          	} else {
-				name "xgz0-releases"
-				url "${nexusUrl}/xgz0-releases/"
-          	}	        
-	    }
-	}    
+//	repositories {
+//	    maven {
+//		    credentials { 
+//			      username nexusUsername 
+//			      password nexusPassword 
+//			}
+//			      
+//            if(project.version.endsWith('-SNAPSHOT')) {
+//				name "xgz0-snapshots"
+//				url "${nexusUrl}/xgz0-snapshots/"
+//          	} else {
+//				name "xgz0-releases"
+//				url "${nexusUrl}/xgz0-releases/"
+//          	}	        
+//	    }
+//	}    
 }
 
 release { 
